@@ -17,62 +17,6 @@ class Sequence:
             result = self
         return result
 
-    def translation(self, frame=0):
-        '''
-        converts an RNA sequence into an amino acid sequence, then calls separate
-        method to identify each subsequence as either protein or oligopeptide
-        ultimately returning a dictionary in this format:
-        dictionary = {1:{"Protein":[],"Oligo":[]}, 2:...}
-        The numbers as keys indicate the ORFs
-        '''
-        if isinstance(self, mRNA):
-            codons = {
-                "UUU": "F", "UUC": "F", "UUA": "L", "UUG": "L",
-                "UCU": "S", "UCC": "S", "UCA": "S", "UCG": "S",
-                "UAU": "Y", "UAC": "Y", "UAA": "*", "UAG": "*",
-                "UGU": "C", "UGC": "C", "UGA": "*", "UGG": "W",
-                "CUU": "L", "CUC": "L", "CUA": "L", "CUG": "L",
-                "CCU": "P", "CCC": "P", "CCA": "P", "CCG": "P",
-                "CAU": "H", "CAC": "H", "CAA": "Q", "CAG": "Q",
-                "CGU": "R", "CGC": "R", "CGA": "R", "CGG": "R",
-                "AUU": "I", "AUC": "I", "AUA": "I", "AUG": "M",
-                "ACU": "T", "ACC": "T", "ACA": "T", "ACG": "T",
-                "AAU": "N", "AAC": "N", "AAA": "K", "AAG": "K",
-                "AGU": "S", "AGC": "S", "AGA": "R", "AGG": "R",
-                "GUU": "V", "GUC": "V", "GUA": "V", "GUG": "V",
-                "GCU": "A", "GCC": "A", "GCA": "A", "GCG": "A",
-                "GAU": "D", "GAC": "D", "GAA": "E", "GAG": "E",
-                "GGU": "G", "GGC": "G", "GGA": "G", "GGG": "G"
-            }
-            protein_sequences = []
-            for frame in range(3):
-                aa_sequence = ''
-                for i in range(frame, len(self.sequence.to_string()) - 2, 3):
-                    codon = self.sequence.to_string()[i:i + 3]
-                    aa = AminoAcid(codons.get(codon, ''))
-                    aa_sequence += str(aa.aa)
-                protein_sequences.append(aa_sequence)
-            
-            minus = self.sequence.to_string()[::-1]
-            for frame in range(3):
-                aa_sequence = ''
-                for i in range(frame, len(minus) - 2, 3):
-                    codon = minus[i:i + 3]
-                    aa = AminoAcid(codons.get(codon, ''))
-                    aa_sequence += str(aa.aa)
-                protein_sequences.append(aa_sequence)
-            
-        else:
-            return "The passed argument is not an mRNA molecule"
-        
-        '''this part calls the other method to generate all the proteins / oligo chains'''
-        protein_data = {}
-        for p in range(6):
-            data = AminoAcidChain(protein_sequences[p])
-            protein_data[p+1] = data.sequence_type()
-            
-            
-        return protein_sequences, protein_data
 
 
 class DNA(Sequence):
