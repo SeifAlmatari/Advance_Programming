@@ -17,11 +17,11 @@ templates folder contains 3 html files
 -----------------------------------------------------------------------------------------
 
 This folder also contains:
--> static folder, this automatically saves a (temp) copy of the DNA statistics graph once 
-   called. required for ease of file handling and to avoid recurring errors
--> a folder called __pycache__ that seems to save automatically once you run the code
--> 2 FASTA sequences, the one provided in the project specification, and the other being
-   a shorter version for quick testing during debugging
+> static folder, this automatically saves a (temp) copy of the DNA statistics graph once 
+  called. required for ease of file handling and to avoid recurring errors
+> a folder called __pycache__ that seems to save automatically once you run the code
+> 2 FASTA sequences, the one provided in the project specification, and the other being
+  a shorter version for quick testing during debugging
 -----------------------------------------------------------------------------------------
 
 Instructions:
