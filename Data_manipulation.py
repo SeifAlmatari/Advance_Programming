@@ -1,10 +1,15 @@
 from Dataset import *
 import matplotlib.pyplot as plt
+from abc import ABC, abstractmethod
 
 class Sequence:
     def __init__(self, sequence):
         '''initialization for each sequence from FASTA file'''
         self.sequence = sequence
+
+    @abstractmethod
+    def get_frequencies(self):
+        pass
 
     def transcription(self):
         '''
@@ -27,6 +32,11 @@ class DNA(Sequence):
 
 
 class mRNA(Sequence):
+    def get_frequencies(self):
+        frequencies = {}
+        for c in ["A", "U", "G", "C"]:
+            frequencies[c] = self.sequence.to_string().count(c)
+        return frequencies
     '''to indicate when the DNA sequence has been converted to an RNA sequence'''
     def translation(self, frame=0):
         '''
@@ -88,6 +98,11 @@ class mRNA(Sequence):
 
 
 class AminoAcidChain(Sequence):
+    def get_frequencies(self):
+        frequencies = {}
+        for c in ["A", "C", "D", "E","F", "G", "H", "I","J","L", "M", "N", "P","Q", "R", "S", "T","V", "W", "Y"]:
+            frequencies[c] = self.sequence.to_string().count(c)
+        return frequencies
     def sequence_type(self):
         '''
         returns a dictionary, method called during translation
