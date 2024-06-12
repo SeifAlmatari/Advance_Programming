@@ -11,19 +11,19 @@ class Sequence:
     def get_frequencies(self):
         pass
 
+    @abstractmethod
     def transcription(self):
-        '''
-        converts DNA to RNA sequence by replacing Ts with Us, if its already an
+        '''converts DNA to RNA sequence by replacing Ts with Us, if its already an
         RNA file, will just return itself
         '''
-        if isinstance(self, DNA):
-            result = self.sequence.str.replace('T', 'U')
-        else:
-            result = self
-        return result
+        pass
 
 class DNA(Sequence):
-    '''counts the frequencies of the bases in the DNA sequence'''
+    '''counts the frequencies of the bases in the DNA sequence
+    '''
+    def transcription(self):
+        result = self.sequence.str.replace('T', 'U')
+        return result
     def get_frequencies(self):
         frequencies = {}
         for c in ["A", "T", "G", "C"]:
@@ -32,6 +32,9 @@ class DNA(Sequence):
 
 
 class mRNA(Sequence):
+    def transcription(self):
+        result = self
+        return result
     def get_frequencies(self):
         frequencies = {}
         for c in ["A", "U", "G", "C"]:
