@@ -75,6 +75,10 @@ class mRNA(Sequence):
             protein_sequences.append(aa_sequence)
         
         minus = self.sequence.to_string()[::-1]
+        new_minus = ""
+        changes = {"C":"G", "G":"C", "A":"U", "U":"A", '':'', ' ':' ','0':'0'}
+        for i in range(len(minus)):
+            new_minus += changes[minus[i]] 
         for frame in range(3):
             aa_sequence = ''
             for i in range(frame, len(minus) - 2, 3):
