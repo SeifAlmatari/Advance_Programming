@@ -17,8 +17,6 @@ class Sequence:
             result = self
         return result
 
-
-
 class DNA(Sequence):
     '''counts the frequencies of the bases in the DNA sequence'''
     def get_frequencies(self):
