@@ -4,7 +4,8 @@ from abc import ABC, abstractmethod
 
 class Sequence:
     def __init__(self, sequence):
-        '''initialization for each sequence from FASTA file'''
+        '''initialization for each sequence from FASTA file
+        '''
         self.sequence = sequence
 
     @abstractmethod
