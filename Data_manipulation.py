@@ -31,7 +31,7 @@ class DNA(Sequence):
     def transcription(self):
         rna_sequence_list = []
         for i in self.sequence:
-            if i.base = "T"
+            if i.base == "T":
                 rna_sequence_list.append(Nucleotide("U"))
         else:
             rna_sequence.append(i)
