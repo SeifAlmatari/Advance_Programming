@@ -43,6 +43,11 @@ class DNA(Sequence):
         for i in ["A", "T", "C", "G"]:
             frequencies[i] = base_list.count(i)
         return frequencies
+    
+    def get_sequence(self):
+        base_sequence = [nucl.base for nucl in self.sequence]
+        string_seq = ''.join(base_sequence)
+        return string_seq
 
 class mRNA(Sequence):
     def __init__(self, sequence):
@@ -57,6 +62,20 @@ class mRNA(Sequence):
         for i in ["A", "U", "C", "G"]:
             frequencies[i] = base_list.count(i)
         return frequencies
+
+    def get_sequence(self):
+        base_sequence = [nucl.base for nucl in self.sequence]
+        string_seq = ''.join(base_sequence)
+        return string_seq
+
+    def reverse_complementary(self):
+        reverse = list(self.get_sequence())
+        reverse = reverse[::-1]
+        new_minus = ''
+        changes = {"C": "G", "G": "C", "A": "U", "U": "A", '': '', ' ': ' ', '0': '0'}
+        for i in range(len(reverse)):  # Generates complementary strand
+            new_minus += changes[reverse[i]]
+        return new_minus
 
     def translation(self):
         '''
@@ -89,21 +108,17 @@ class mRNA(Sequence):
             aa_sequence = ''
             for i in range(frame, len(self.sequence) -2, 3):
                 codon = self.sequence[i:i + 3]
-                str_codon = str([nucl.base for nucl in codon])
+                str_codon = ''.join([nucl.base for nucl in codon])
                 str_aa = codons.get(str_codon, '')
                 aa_sequence += str_aa
             orf_sequences.append(aa_sequence)
         
-        minus = self.sequence.to_string()[::-1]
-        new_minus = ''
-        changes = {"C":"G", "G":"C", "A":"U", "U":"A", '':'', ' ':' ','0':'0'}
-        for i in range(len(minus)): # Generates complementary strand
-            new_minus += changes[minus[i]] 
+        minus = self.reverse_complementary()
         
         for frame in range(3): # Generates three ORFs from the minus (-) strand # COPIARE PLUS STRAND
             aa_sequence = ''
-            for i in range(frame, len(new_minus) -2, 3):
-                str_codon = new_minus[i:i+3]
+            for i in range(frame, len(minus) -2, 3):
+                str_codon = minus[i:i+3]
                 str_aa = codons.get(str_codon, '')
                 aa_sequence += str_aa
             orf_sequences.append(aa_sequence)
@@ -122,6 +137,9 @@ class AminoAcidChain(Sequence):
         for i in sequence:
             l.append(AminoAcid(i))
         self.sequence = pd.Series(l)
+
+    def transcription(self):
+        return self
     
     def get_frequencies(self):
         aa_list = [aa.aa for aa in self.sequence[0]]
@@ -129,8 +147,13 @@ class AminoAcidChain(Sequence):
         for c in ["A", "C", "D", "E","F", "G", "H", "I","J","L", "M", "N", "P","Q", "R", "S", "T","V", "W", "Y"]:
             frequencies[c] = aa_list.count(c)
         return frequencies
+
+    def get_sequence(self):
+        aa_sequence = [aa.aa for aa in self.sequence]
+        string_seq = ''.join(aa_sequence)
+        return string_seq
         
-    def sequence_type(self): # SEQUENCE TYPE DA MODIFICARE
+    def sequence_type(self): 
         '''
         returns a dictionary, method called during translation
         to return a dictionary with all the protein and oligopeptide
@@ -141,33 +164,43 @@ class AminoAcidChain(Sequence):
         idx = 0
         while idx < len(sequence):
             seq = ""
-            if sequence[idx] == "M":
-                while sequence[idx] != "*":
-                    seq += sequence[idx]
+            if sequence[idx].aa == "M":
+                while sequence[idx].aa != "*":
+                    seq += sequence[idx].aa
                     idx += 1
                     if idx == len(sequence):
                         break
                 if len(seq) > 20:
-                    seq = str(Protein(seq))
-                    chain["Protein"] += [(len(seq), seq)]
+                    seq = Protein(seq)
+                    chain["Protein"] += [(len(seq.sequence), seq.get_sequence())]
                 elif len(seq) > 0:
-                    seq = str(Oligopeptide(seq))
-                    chain["Oligo"] += [(len(seq), seq)]
+                    seq = Oligopeptide(seq)
+                    chain["Oligo"] += [(len(seq.sequence), seq.get_sequence())]
             else:
                 idx += 1
         for k,v in chain.items():
             chain[k] = sorted(chain[k], reverse=True)
         return chain
 
-class Protein(Sequence):
+class Protein(AminoAcidChain):
     '''to identify the proteins sequences as Protein'''
     def __str__(self):
         return self.sequence
+    
+    def get_sequence(self):
+        aa_sequence = [aa.aa for aa in self.sequence]
+        string_seq = ''.join(aa_sequence)
+        return string_seq
 
-class Oligopeptide(Sequence):
+class Oligopeptide(AminoAcidChain):
     '''to idenitfy the oligo sequences as Oligopeptides'''
     def __str__(self):
         return self.sequence
+    
+    def get_sequence(self):
+        aa_sequence = [aa.aa for aa in self.sequence]
+        string_seq = ''.join(aa_sequence)
+        return string_seq
 
 class AminoAcid():
     '''when converting the mRNA sequence using codons during transcription'''
