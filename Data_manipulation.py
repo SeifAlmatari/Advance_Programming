@@ -1,12 +1,13 @@
-from Dataset import *
+import pandas as pd
 import matplotlib.pyplot as plt
+from Dataset import *
 from abc import ABC, abstractmethod
 
 class Sequence(ABC):
     def __init__(self, sequence):
         '''initialization for each sequence from FASTA file
         '''
-        self.sequence = sequence
+        self.__sequence = sequence
 
     @abstractmethod
     def get_frequencies(self):
@@ -18,64 +19,67 @@ class Sequence(ABC):
         RNA file, will just return itself
         '''
         pass
+    @abstractmethod
+    def get_sequence(self):
+        pass
         
 class DNA(Sequence):
     '''counts the frequencies of the bases in the DNA sequence
     '''
     def __init__(self, sequence):
         dna_sequence_list = []
-        for i in sequence:
+        for i in sequence[0]:
             dna_sequence_list.append(Nucleotide(i))
-        self.sequence = pd.Series(dna_sequence_list)
+        self.__sequence = pd.Series(dna_sequence_list)
         
     def transcription(self):
         rna_sequence_list = []
-        for i in self.sequence:
+        for i in self.__sequence:
             if i.base == "T":
                 rna_sequence_list.append(Nucleotide("U"))
-        else:
-            rna_sequence_list.append(i)
-        return rna_sequence_list
+            else:
+                rna_sequence_list.append(i)
+        return mRNA(rna_sequence_list)
 
     def get_frequencies(self):
-        base_list = [nucl.base for nucl in self.sequence]
+        base_list = [nucl.base for nucl in self.__sequence]
         frequencies = {}
         for i in ["A", "T", "C", "G"]:
-            frequencies[i] = base_list[0].count(i)
+            frequencies[i] = base_list.count(i)
         return frequencies
     
     def get_sequence(self):
-        base_sequence = [nucl.base for nucl in self.sequence]
+        base_sequence = [nucl.base for nucl in self.__sequence]
         string_seq = ''.join(base_sequence)
         return string_seq
 
 class mRNA(Sequence):
     def __init__(self, sequence):
-        self.sequence = pd.Series(sequence)
+        self.__sequence = pd.Series(sequence)
         
     def transcription(self):
-        return self.sequence
+        return self.__sequence
         
     def get_frequencies(self):
-        base_list = [nucl.base for nucl in self.sequence]
+        base_list = [nucl.base for nucl in self.__sequence]
         frequencies = {}
         for i in ["A", "U", "C", "G"]:
             frequencies[i] = base_list.count(i)
         return frequencies
 
     def get_sequence(self):
-        base_sequence = [nucl.base for nucl in self.sequence]
+        base_sequence = [nucl.base for nucl in self.__sequence]
         string_seq = ''.join(base_sequence)
         return string_seq
 
     def reverse_complementary(self):
-        reverse = list(self.get_sequence())
-        reverse = reverse[::-1]
-        new_minus = ''
+        string_seq = self.get_sequence()
+        reverse = string_seq[::-1]
+        rev_comp = ''
         changes = {"C": "G", "G": "C", "A": "U", "U": "A"}
-        for i in range(len(reverse)):  # Generates complementary strand
-            new_minus += changes[reverse[i]]
-        return new_minus
+        for i in reverse:  # Generates complementary strand
+            rev_comp += changes[i]
+        return rev_comp
 
     def translation(self):
         '''
@@ -106,8 +110,8 @@ class mRNA(Sequence):
         orf_sequences = []
         for frame in range(3): # Generates three ORFs from the plus (+) strand
             aa_sequence = ''
-            for i in range(frame, len(self.sequence) -2, 3):
-                codon = self.sequence[i:i + 3]
+            for i in range(frame, len(self.__sequence) -2, 3):
+                codon = self.__sequence[i:i + 3]
                 str_codon = ''.join([nucl.base for nucl in codon])
                 str_aa = codons.get(str_codon, '')
                 aa_sequence += str_aa
@@ -142,7 +146,7 @@ class AminoAcidChain(Sequence):
         return self
     
     def get_frequencies(self):
-        aa_list = [aa.aa for aa in self.sequence[0]]
+        aa_list = [aa.aa for aa in self.sequence]
         frequencies = {}
         for c in ["A", "C", "D", "E","F", "G", "H", "I","J","L", "M", "N", "P","Q", "R", "S", "T","V", "W", "Y"]:
             frequencies[c] = aa_list.count(c)
@@ -172,10 +176,10 @@ class AminoAcidChain(Sequence):
                         break
                 if len(seq) > 20:
                     seq = Protein(seq)
-                    chain["Protein"] += [(len(seq.sequence), seq.get_sequence())]
+                    chain["Protein"] += [(len(seq.get_sequence()), seq.get_sequence())]
                 elif len(seq) > 0:
                     seq = Oligopeptide(seq)
-                    chain["Oligo"] += [(len(seq.sequence), seq.get_sequence())]
+                    chain["Oligo"] += [(len(seq.get_sequence()), seq.get_sequence())]
             else:
                 idx += 1
         for k,v in chain.items():
@@ -184,6 +188,7 @@ class AminoAcidChain(Sequence):
 
 class Protein(AminoAcidChain):
     '''to identify the proteins sequences as Protein'''
+
     def __str__(self):
         return self.sequence
     
