@@ -34,14 +34,14 @@ class DNA(Sequence):
             if i.base == "T":
                 rna_sequence_list.append(Nucleotide("U"))
         else:
-            rna_sequence.append(i)
+            rna_sequence_list.append(i)
         return rna_sequence_list
 
     def get_frequencies(self):
         base_list = [nucl.base for nucl in self.sequence]
         frequencies = {}
         for i in ["A", "T", "C", "G"]:
-            frequencies[i] = base_list.count(i)
+            frequencies[i] = base_list[0].count(i)
         return frequencies
     
     def get_sequence(self):
@@ -72,7 +72,7 @@ class mRNA(Sequence):
         reverse = list(self.get_sequence())
         reverse = reverse[::-1]
         new_minus = ''
-        changes = {"C": "G", "G": "C", "A": "U", "U": "A", '': '', ' ': ' ', '0': '0'}
+        changes = {"C": "G", "G": "C", "A": "U", "U": "A"}
         for i in range(len(reverse)):  # Generates complementary strand
             new_minus += changes[reverse[i]]
         return new_minus
