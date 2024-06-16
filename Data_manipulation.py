@@ -35,21 +35,21 @@ class DNA(Sequence):
     def transcription(self):
         rna_sequence_list = []
         for i in self.__sequence:
-            if i.base == "T":
+            if i.get_base() == "T":
                 rna_sequence_list.append(Nucleotide("U"))
             else:
                 rna_sequence_list.append(i)
         return mRNA(rna_sequence_list)
 
     def get_frequencies(self):
-        base_list = [nucl.base for nucl in self.__sequence]
+        base_list = [nucl.get_base() for nucl in self.__sequence]
         frequencies = {}
         for i in ["A", "T", "C", "G"]:
             frequencies[i] = base_list.count(i)
         return frequencies
     
     def get_sequence(self):
-        base_sequence = [nucl.base for nucl in self.__sequence]
+        base_sequence = [nucl.get_base() for nucl in self.__sequence]
         string_seq = ''.join(base_sequence)
         return string_seq
 
@@ -61,14 +61,14 @@ class mRNA(Sequence):
         return self.__sequence
         
     def get_frequencies(self):
-        base_list = [nucl.base for nucl in self.__sequence]
+        base_list = [nucl.get_base() for nucl in self.__sequence]
         frequencies = {}
         for i in ["A", "U", "C", "G"]:
             frequencies[i] = base_list.count(i)
         return frequencies
 
     def get_sequence(self):
-        base_sequence = [nucl.base for nucl in self.__sequence]
+        base_sequence = [nucl.get_base() for nucl in self.__sequence]
         string_seq = ''.join(base_sequence)
         return string_seq
 
@@ -112,7 +112,7 @@ class mRNA(Sequence):
             aa_sequence = ''
             for i in range(frame, len(self.__sequence) -2, 3):
                 codon = self.__sequence[i:i + 3]
-                str_codon = ''.join([nucl.base for nucl in codon])
+                str_codon = ''.join([nucl.get_base() for nucl in codon])
                 str_aa = codons.get(str_codon, '')
                 aa_sequence += str_aa
             orf_sequences.append(aa_sequence)
@@ -146,14 +146,14 @@ class AminoAcidChain(Sequence):
         return self
     
     def get_frequencies(self):
-        aa_list = [aa.aa for aa in self.sequence]
+        aa_list = [aa.get_aa() for aa in self.sequence]
         frequencies = {}
         for c in ["A", "C", "D", "E","F", "G", "H", "I","J","L", "M", "N", "P","Q", "R", "S", "T","V", "W", "Y"]:
             frequencies[c] = aa_list.count(c)
         return frequencies
 
     def get_sequence(self):
-        aa_sequence = [aa.aa for aa in self.sequence]
+        aa_sequence = [aa.get_aa() for aa in self.sequence]
         string_seq = ''.join(aa_sequence)
         return string_seq
         
@@ -168,9 +168,9 @@ class AminoAcidChain(Sequence):
         idx = 0
         while idx < len(sequence):
             seq = ""
-            if sequence[idx].aa == "M":
-                while sequence[idx].aa != "*":
-                    seq += sequence[idx].aa
+            if sequence[idx].get_aa() == "M":
+                while sequence[idx].get_aa() != "*":
+                    seq += sequence[idx].get_aa()
                     idx += 1
                     if idx == len(sequence):
                         break
@@ -193,7 +193,7 @@ class Protein(AminoAcidChain):
         return self.sequence
     
     def get_sequence(self):
-        aa_sequence = [aa.aa for aa in self.sequence]
+        aa_sequence = [aa.get_aa() for aa in self.sequence]
         string_seq = ''.join(aa_sequence)
         return string_seq
 
@@ -203,16 +203,20 @@ class Oligopeptide(AminoAcidChain):
         return self.sequence
     
     def get_sequence(self):
-        aa_sequence = [aa.aa for aa in self.sequence]
+        aa_sequence = [aa.get_aa() for aa in self.sequence]
         string_seq = ''.join(aa_sequence)
         return string_seq
 
 class AminoAcid():
     '''when converting the mRNA sequence using codons during transcription'''
     def __init__(self, aa):
-        self.aa = aa
+        self.__aa = aa
+    def get_aa(self):
+        return self.__aa
 
 class Nucleotide():
     '''for each of the bases'''
     def __init__(self, base):
-        self.base = base
+        self.__base = base
+    def get_base(self):
+        return self.__base
