@@ -58,9 +58,10 @@ def home():
     Bases = {"A":"Adenine","T":"Thymine","G":"Guanine","C":"Cytosine"}
     maxi = max((v, k) for k, v in stats.items())
     mini = min((v, k) for k, v in stats.items())
-    names = (Bases[maxi[1]],Bases[mini[1]])    
+    names = (Bases[maxi[1]],Bases[mini[1]])  
+    dna_sequence_string = dna_sequence.get_sequence()
     return render_template('home.html',
-                           dna_seq=dna_sequence.sequence.to_string(),
+                           dna_seq=dna_sequence_string,
                            stats=[stats, maxi, mini,names])
 
 #----------------------------------------------------------------------------------
