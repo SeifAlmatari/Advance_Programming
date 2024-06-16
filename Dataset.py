@@ -1,7 +1,8 @@
 import pandas as pd
 
 def read_fasta(file):
-    '''simple function to read FASTA file and identify the sequence using pandas'''
+    '''reads a FASTA file and converts it into a Pandas series
+    '''
     sequence = ''
     for line in file:
         if line[0] == '>':
