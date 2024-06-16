@@ -5,28 +5,33 @@ from abc import ABC, abstractmethod
 
 class Sequence(ABC):
     def __init__(self, sequence):
-        '''initialization for each sequence from FASTA file
+        '''initializes every sequence that can be obtained from the FASTA file
         '''
         self.__sequence = sequence
 
     @abstractmethod
     def get_frequencies(self):
-        pass
-
-    @abstractmethod
-    def transcription(self):
-        '''converts DNA to RNA sequence by replacing Ts with Us, if its already an
-        RNA file, will just return itself
+        '''returns the occurrence count of each base in the sequence
         '''
         pass
+    
+    @abstractmethod
+    def transcription(self):
+        '''return the RNA sequence obtained from DNA by replacing Ts with Us,
+        if input is already an RNA file, just returns itself
+        '''
+        pass
+    
     @abstractmethod
     def get_sequence(self):
+        '''returns the visual representation of the sequence
+        '''
         pass
         
 class DNA(Sequence):
-    '''counts the frequencies of the bases in the DNA sequence
-    '''
     def __init__(self, sequence):
+        '''initializes a DNA object
+        '''
         dna_sequence_list = []
         for i in sequence[0]:
             dna_sequence_list.append(Nucleotide(i))
@@ -55,6 +60,8 @@ class DNA(Sequence):
 
 class mRNA(Sequence):
     def __init__(self, sequence):
+        '''initializes an mRNA object
+        '''
         self.__sequence = pd.Series(sequence)
         
     def transcription(self):
@@ -73,21 +80,19 @@ class mRNA(Sequence):
         return string_seq
 
     def reverse_complementary(self):
+        '''returns the reverse complementary of the RNA sequence
+        '''
         string_seq = self.get_sequence()
         reverse = string_seq[::-1]
         rev_comp = ''
         changes = {"C": "G", "G": "C", "A": "U", "U": "A"}
-        for i in reverse:  # Generates complementary strand
+        for i in reverse:
             rev_comp += changes[i]
         return rev_comp
 
     def translation(self):
-        '''
-        converts an RNA sequence into an amino acid sequence, then calls separate
-        method to identify each subsequence as either protein or oligopeptide
-        ultimately returning a dictionary in this format:
-        dictionary = {1:{"Protein":[],"Oligo":[]}, 2:...}
-        The numbers as keys indicate the ORFs
+        '''returns the amino acid sequence obtained from the RNA considering all the possible ORFs
+        and, depending on the lenght of each product, stores each as protein or oligopeptide by calling
         '''
         codons = {
             "UUU": "F", "UUC": "F", "UUA": "L", "UUG": "L",
@@ -127,7 +132,6 @@ class mRNA(Sequence):
                 aa_sequence += str_aa
             orf_sequences.append(aa_sequence)
         
-        '''this part calls the other method to generate all the proteins / oligo chains'''
         protein_data = {}
         for p in range(6):
             data = AminoAcidChain(orf_sequences[p])
@@ -137,6 +141,8 @@ class mRNA(Sequence):
     
 class AminoAcidChain(Sequence):
     def __init__(self, sequence):
+        '''initializes an amino acid chain object
+        '''
         l  = []
         for i in sequence:
             l.append(AminoAcid(i))
@@ -158,10 +164,8 @@ class AminoAcidChain(Sequence):
         return string_seq
         
     def sequence_type(self): 
-        '''
-        returns a dictionary, method called during translation
-        to return a dictionary with all the protein and oligopeptide
-        sequences,only considers subsequences that start with M and end with *
+        '''returns a dictionary storing amino acid sequences as proteins or oligopeptides
+        depending on their lenght (each product starts with M and end with a stop codon (*)
         '''
         sequence = self.sequence
         chain = {"Protein":[], "Oligo":[]}
@@ -187,8 +191,7 @@ class AminoAcidChain(Sequence):
         return chain
 
 class Protein(AminoAcidChain):
-    '''to identify the proteins sequences as Protein'''
-
+    '''identifies a protein'''
     def __str__(self):
         return self.sequence
     
@@ -198,7 +201,7 @@ class Protein(AminoAcidChain):
         return string_seq
 
 class Oligopeptide(AminoAcidChain):
-    '''to idenitfy the oligo sequences as Oligopeptides'''
+    '''identifies an Oligopeptide'''
     def __str__(self):
         return self.sequence
     
@@ -208,15 +211,17 @@ class Oligopeptide(AminoAcidChain):
         return string_seq
 
 class AminoAcid():
-    '''when converting the mRNA sequence using codons during transcription'''
     def __init__(self, aa):
+        '''initializes an amino acid object
+        '''
         self.__aa = aa
     def get_aa(self):
         return self.__aa
 
 class Nucleotide():
-    '''for each of the bases'''
     def __init__(self, base):
+        '''initializes a nucleotide object
+        '''
         self.__base = base
     def get_base(self):
         return self.__base
