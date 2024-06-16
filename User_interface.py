@@ -1,6 +1,5 @@
 from Data_manipulation import *
 from flask import Flask, render_template, request, redirect, url_for
-import os
 import matplotlib.pyplot as plt
 
 app = Flask(__name__)
@@ -42,7 +41,7 @@ def upload_file():
         with open(file_path, 'r') as file:
             dataset = read_fasta(file)
         dna_sequence = DNA(dataset)
-        rna_seq = mRNA(dna_sequence.transcription())
+        rna_seq = dna_sequence.transcription()
         return redirect(url_for('home'))
     else:
         return "Invalid file format. Please upload a FASTA file."
@@ -70,7 +69,12 @@ def home():
 def transcribe_and_translate():
     if dna_sequence is None:
         return redirect(url_for('landing'))
-    
+    stats = rna_seq.get_frequencies()
+    generate_base_frequencies_chart(stats)
+    Bases = {"A": "Adenine", "U": "Uracil", "G": "Guanine", "C": "Cytosine"}
+    maxi = max((v, k) for k, v in stats.items())
+    mini = min((v, k) for k, v in stats.items())
+    names = (Bases[maxi[1]], Bases[mini[1]])
     sort_order = request.args.get('sort', 'asc')
     protein_sequences, orf_dict = rna_seq.translation()
     
@@ -85,7 +89,8 @@ def transcribe_and_translate():
             orf_dict[key]['Oligo'] = sorted(oligos, key=lambda x: x[0], reverse=True)
     
     return render_template('transcription_translation.html',
-                           rna_sequence=rna_seq.sequence.to_string(),
+                           stats=[stats, maxi, mini, names],
+                           rna_sequence=rna_seq.get_sequence(),
                            pseq=protein_sequences,
                            PROTEINS=orf_dict,
                            sort_order=sort_order)
