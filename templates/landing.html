@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page</title>
+    <style>
+        body {display: flex;justify-content: center;align-items: center;
+            height: 100vh;flex-direction: column;background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+        }
+        h1 {margin-bottom: 20px;
+        }
+        form {display: flex;flex-direction: column;align-items: center;
+        }
+        input[type="file"] {margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the DNA Sequence Analyzer</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <label for="fasta-file">Import FASTA file:</label>
+        <input type="file" id="fasta-file" name="fasta-file" accept=".fasta">
+        <button type="submit">Go</button>
+    </form>
+</body>
+</html>

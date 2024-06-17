@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mRNA</title>
+    <style>
+        body {
+            background-color: #f7f7f7; color: #333; font-family: Arial, sans-serif;
+        }
+        .scroll-box, .scroll-box-short {
+            background-color: #fff;padding: 10px;border: 1px solid #ccc;
+        }
+        .scroll-box {
+            height: 200px;overflow-y: scroll;
+        }
+        .scroll-box-short {
+            height: 100px;overflow-y: scroll;
+        }
+        input[type="text"], select {
+            background-color: #fff;border: 1px solid #ccc;padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Transcription</h1>
+    <h2>mRNA Sequence:</h2>
+
+    <div class="scroll-box">
+        {% for i in range(1, 29704, 100) %}
+        <p>{{rna_sequence[i:i+100]}}</p>
+        {% endfor %}
+    </div>
+    
+	<h3>Some Statistics of the sequence:</h3>
+    <img src="{{ url_for('static', filename='base_frequencies.png') }}" alt="Base Frequencies Chart">
+    <h3>The frequency of each base in the mRNA sequence are:</h3>
+    <p>Adenine (A): {{stats[0]["A"]}} - Uracil (U): {{stats[0]["U"]}} - Guanine (G): {{stats[0]["G"]}} - Cytosine (C): {{stats[0]["C"]}}</p>
+    <ul>
+        <li><p>Most frequent base is {{stats[3][0]}} ({{stats[1][1]}}) found {{stats[1][0]}} times</p></li>
+        <li><p>Least frequent base is {{stats[3][1]}} ({{stats[2][1]}}) only found {{stats[2][0]}} times</p></li>
+    </ul>
+
+    <h1>Translation</h1>
+    <h2>Each Open Reading Frame (ORF) is translated into a different sequence:</h2>
+    <ol>
+        <h3>From the positive (+) strand:</h3>
+        <li><p>{{pseq[0]}}</p></li>
+        <li><p>{{pseq[1]}}</p></li>
+        <li><p>{{pseq[2]}}</p></li>
+        <h3>From the negative (-) strand:</h3>
+        <li><p>{{pseq[3]}}</p></li>
+        <li><p>{{pseq[4]}}</p></li>
+        <li><p>{{pseq[5]}}</p></li>
+    </ol>
+
+    <label for="sort-order">Sort Order:</label>
+    <select id="sort-order" onchange="location = this.value;">
+        <option value="?sort=asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+        <option value="?sort=desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+    </select>
+
+    <h2>Proteins and Oligopeptides:</h2>
+    {% for key, value in PROTEINS.items() %}
+        <h3>ORF {{key}}</h3>
+        
+        <h4>Proteins:</h4>
+        <div class="scroll-box-short">
+            {% if value['Protein'] %}
+                {% for protein in value['Protein'] %}
+                    <p>Length: {{protein[0]}}, Sequence: {{protein[1]}}</p>
+                {% endfor %}
+            {% else %}
+                <p>No proteins found.</p>
+            {% endif %}
+        </div>
+
+        <h4>Oligopeptides:</h4>
+        <div class="scroll-box-short">
+            {% if value['Oligo'] %}
+                {% for oligo in value['Oligo'] %}
+                    <p>Length: {{oligo[0]}}, Sequence: {{oligo[1]}}</p>
+                {% endfor %}
+            {% else %}
+                <p>No oligopeptides found.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+    
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            background-color: #f7f7f7;color: #333;font-family: Arial, sans-serif;
+        }
+        .scroll-box {height: 200px;overflow-y: scroll;
+            background-color: #fff;border: 1px solid #ccc;padding: 10px;
+        }
+        .scroll-box-short {height: 100px;overflow-y: scroll;background-color: #fff;
+            border: 1px solid #ccc;padding: 10px;
+        }
+        input[type="text"], select {background-color: #fff;
+            border: 1px solid #ccc;padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>FASTA Viewer</h1>
+    <h3>The DNA Sequence is:</h3>
+    
+    <div class="scroll-box">
+        {% for i in range(0, 30000, 100) %}
+        <p>{{dna_seq[i:i+100]}}</p>
+        {% endfor %}
+    </div>
+  
+    <h3>Some Statistics of the sequence:</h3>
+    <img src="{{ url_for('static', filename='base_frequencies.png') }}" alt="Base Frequencies Chart">
+    <h3>The frequency of each base in the DNA sequences are:</h3>
+    <p>Adenine (A): {{stats[0]["A"]}} - Thymine (T): {{stats[0]["T"]}} - Guanine (G): {{stats[0]["G"]}} - Cytosine (C): {{stats[0]["C"]}}</p>
+    <ul>
+        <li><p>Most frequent base is {{stats[3][0]}} ({{stats[1][1]}}) found {{stats[1][0]}} times</p></li>
+        <li><p>Least frequent base is {{stats[3][1]}} ({{stats[2][1]}}) only found {{stats[2][0]}} times</p></li>
+    </ul>
+    <p><a href='/transcription_translation'>Click here</a> to convert sequence to mRNA and to transcribe it</p>
+</body>
+</html>
