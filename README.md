@@ -70,7 +70,7 @@ The get_sequence() method returns a string representation of the sequence of Ami
 
 AminoAcid is a class characterized by a private string of length 1 used to represent the corresponding amino acid.
 
-The get_aa() method returns a string representation of the amino acid sequence.
+The get_aa() method returns a string representation of the amino acid.
 
 
 Nucleotide is a class characterized by a private string of length 1 used to represent the corresponding nucleotide.
